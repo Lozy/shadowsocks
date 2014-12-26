@@ -14,5 +14,5 @@ Addition parameter:
 | ------ | --------- | ------- |
 |  --sport      |      shadowsocks server port | 40004 |
 |  --lport      |      local port | 40005 |
-|  --password   |       shadowsocks password | radomize(8) |
+|  --password   |       shadowsocks password | randomize(8) |
 |  --encry      |       package encry type | aes-256-cfb |
