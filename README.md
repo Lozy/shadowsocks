@@ -2,7 +2,8 @@ shadowsocks
 ===========
 
 ```
-wget --no-check-certificate https://raw.githubusercontent.com/Lozy/shadowsocks/master/SS_debian -O SS_debian
+wget --no-check-certificate \
+   https://raw.githubusercontent.com/Lozy/shadowsocks/master/SS_debian -O SS_debian
 chmod +x SS_debian
 ./SS_debian
 ```
