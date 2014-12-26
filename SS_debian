@@ -1,0 +1,79 @@
+#!/bin/bash
+for _PARAMETER in $*
+	do
+		case "${_PARAMETER}" in
+			--sport=*)
+				serverPort="${_PARAMETER#--sport=}"
+			;;
+			--lport=*)
+				localPort="${_PARAMETER#--lport=}"
+			;;
+			--password=*)
+				passWord="${_PARAMETER#--password=}"
+			;;
+			--encry=*)
+				encry="${_PARAMETER#--encry=}"
+			;;
+			--ip=*)
+				ip="${_PARAMETER#--ip=}"
+			;;
+			-h|--help)
+		    	options=("--sport@shadowsocks server port[40004]" "--lport@local port[40005]" \
+						 "--password@shadowsocks password[Random]" "--encry@package encry type")
+		    	
+		    	printf "Usage: %s [OPTIONS]\n\nOptions:\n\n" $0
+		    	for option in "${options[@]}";do
+		    		printf "  %-20s%s\n" "$( echo ${option} | sed 's/@.*//g')"  "$( echo ${option} | sed 's/.*@//g')"
+		    	done
+		    	echo -e "\n"
+		    	exit 1
+		esac
+done
+
+[ -z "$serverPort" ] && serverPort=40004
+[ -z "$localPort" ] && localPort=40005
+[ -z "$passWord" ] && passWord=$( cat /dev/urandom | head -1 | md5sum | head -c 8 )
+[ -z "$encry" ] && encry="aes-256-cfb"
+[ -z "$ip" ] && ip=$(ifconfig | sed -n 's/.*inet addr:\([^ ]*\) .*/\1/p' | grep -v '127.0.0'| head -1)
+
+printf "Install shadowsocks service:\n"
+printf "%-10s : %s\n" "--ip" "${ip}"
+printf "%-10s : %s\n" "--sport" "${serverPort}"
+printf "%-10s : %s\n" "--lport" "${localPort}"
+printf "%-10s : %s\n" "--password" "${passWord}"
+printf "%-10s : %s\n" "--encry" "${encry}"
+echo
+
+if [ -n "$(grep 'squeeze' /etc/apt/sources.list)" ];then
+	[ -z "$( grep 'shadowsocks.org' /etc/apt/sources.list )" ] && \
+		echo "deb http://shadowsocks.org/debian squeeze main" >> /etc/apt/sources.list
+	sName="shadowsocks"
+else
+	[ -z "$( grep 'shadowsocks.org' /etc/apt/sources.list )" ] && \
+		echo "deb http://shadowsocks.org/debian wheezy main" >> /etc/apt/sources.list
+	sName="shadowsocks-libev"
+fi
+apt-get update -qq
+apt-get install ${sName} python-m2crypto bash --force-yes -y -qq
+
+cat > /etc/"${sName}"/config.json <<EOF
+{
+          "server":"${ip}",
+          "server_port":${serverPort},
+          "local_port":${localPort},
+          "password":"${password}",
+          "timeout":60,
+          "method":"${encry}",
+}
+EOF
+
+/etc/init.d/${sName} stop
+/etc/init.d/${sName} start
+
+[ -n "$(netstat -an | grep ":${serverPort}" )" ] &&\
+	echo -e "\033[32mshadowsocks Server Install Successfuly! \033[0m\n" ||\
+	echo -e "\033[1;31mshadowsocks Server Install Failed! \033[0m\n"
+
+rm $0 -f
+
+exit 0
