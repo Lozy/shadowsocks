@@ -10,9 +10,9 @@ chmod +x SS_debian
 
 Addition parameter:
 
-| option | describle |
-| ------ | --------- |
-|  --sport      |      shadowsocks server port[40004] |
-|  --lport      |      local port[40005] |
-|  --password   |       shadowsocks password[Random] |
-|  --encry      |       package encry type |
+| option | describle | default |
+| ------ | --------- | ------- |
+|  --sport      |      shadowsocks server port | 40004 |
+|  --lport      |      local port | 40005 |
+|  --password   |       shadowsocks password | radomize(8) |
+|  --encry      |       package encry type | aes-256-cfb |
