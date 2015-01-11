@@ -61,7 +61,7 @@ cat > /etc/"${sName}"/config.json <<EOF
           "server":"${ip}",
           "server_port":${serverPort},
           "local_port":${localPort},
-          "password":"${password}",
+          "password":"${passWord}",
           "timeout":60,
           "method":"${encry}",
 }
